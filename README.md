@@ -83,8 +83,8 @@ The dataset contains three key tables:
 - **Test ROC-AUC**: 0.939
 
 ## 📉 Precision vs. Recall Tradeoff
+![image](https://github.com/user-attachments/assets/98d72ca5-d1f9-4589-ac75-70505de83e76)
 
-![Precision-Recall Curve](./552f99ff-8a53-4c93-9399-8622b2692d72.png)
 
 The curve shows a typical tradeoff where increasing recall leads to a decrease in precision. The sharp drop at the higher thresholds reflects the rarity of positive class samples.
 
@@ -122,7 +122,6 @@ The curve shows a typical tradeoff where increasing recall leads to a decrease i
 
 ## 👨‍💼 Author
 
-**[Your Full Name]**  
+**Priyadarshi Kumar**  
 3rd Year Undergraduate | Dept. of Metallurgical & Materials Engineering  
-Data Science • Machine Learning • Computer Vision  
-[GitHub](#) • [LinkedIn](#) • [Email](#)
+Data Science • Machine Learning • Data Analytics
