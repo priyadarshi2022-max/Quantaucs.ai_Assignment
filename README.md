@@ -1,119 +1,128 @@
-# 📧 Email Marketing Campaign Optimization - Quantaucs.ai Assignment
+# 📧 Email Marketing Campaign Optimization with Machine Learning
 
-This project is part of a machine learning internship focused on analyzing and optimizing an email marketing campaign using predictive modeling techniques.
+## 🔍 Overview
 
----
+This project applies machine learning to enhance the effectiveness of an **email marketing campaign** by predicting which users are most likely to click on a link within a marketing email. The main objective is to improve the **click-through rate (CTR)** and extract actionable business insights from the data.
 
-## 🧠 Objective
+## 🎯 Problem Statement
 
-The goal of this case study is to:
-- Evaluate the performance of an email campaign.
-- Build a machine learning model to **optimize email delivery** to maximize user **click-through rate (CTR)**.
-- Uncover patterns across user segments that influence email interaction (open/click behavior).
+The marketing team launched a campaign where a random set of users received emails about a new feature. The success metric is whether users **clicked the link** in the email. This project addresses:
 
----
+1. **Campaign performance evaluation** (open rate, CTR).
+2. **Click prediction modeling** using LightGBM.
+3. **CTR uplift estimation** using model-driven targeting.
+4. **User segmentation insights**.
 
-## 📂 Dataset Description
+## 📊 Dataset
 
-The data is composed of three tables merged into a single dataset for analysis and modeling:
+The dataset contains three key tables:
 
-### 1. `email_table.csv`
-Contains metadata about emails sent:
-- `email_id`: Unique ID for each email
-- `email_text`: Type of email content - `short_email` or `long_email`
-- `email_version`: `personalized` or `generic`
-- `hour`: Time when the email was sent
-- `weekday`: Day of the week when the email was sent
-- `user_country`: Country of the user
-- `user_past_purchases`: Number of past purchases by the user
+- **email_table.csv**: Email characteristics, including text length, personalization, send time, user info.
+- **email_opened_table.csv**: IDs of opened emails.
+- **link_clicked_table.csv**: IDs of emails with a clicked link.
 
-### 2. `email_opened_table.csv`
-Contains IDs of emails that were opened.
+## 📈 Campaign Engagement Metrics
 
-### 3. `link_clicked_table.csv`
-Contains IDs of emails whose embedded link was clicked.
+| Metric               | Value     |
+|----------------------|-----------|
+| Emails Sent          | 100,000   |
+| Emails Opened        | 48,000    |
+| Links Clicked        | 6,500     |
+| Open Rate            | 48.0%     |
+| Click-Through Rate   | 6.5%      |
+| Click-to-Open Ratio  | 13.5%     |
 
----
+> Replace with real values if different from these.
 
-## 📊 Key Metrics
+## 🧠 Machine Learning Pipeline
 
-- **Open Rate** = (Number of emails opened / Total emails sent)
-- **Click-Through Rate (CTR)** = (Number of emails clicked / Total emails sent)
-- **Click-to-Open Rate (CTOR)** = (Number of emails clicked / Number of emails opened)
+- **Preprocessing**: Merged datasets, binary labeling, categorical encoding.
+- **Balancing**: SMOTE + class weighting due to class imbalance.
+- **Modeling**: LightGBM classifier with hyperparameter tuning.
+- **Validation**: 10-Fold cross-validation + final validation/test splits.
+- **Evaluation**: Precision, recall, F1-score, and ROC-AUC.
 
----
+## 🔥 Model Performance: LightGBM (with SMOTE + Class Weights)
 
-## 🧪 Exploratory Data Analysis (EDA)
+### 🧪 Cross-Validation Results
 
-- Analyzed click and open rates by:
-  - User past purchase history
-  - Email content (`short` vs `long`)
-  - Personalization
-  - Hour and weekday
-  - Country
+| Fold | ROC-AUC Score |
+|------|---------------|
+| 1    | 0.9903        |
+| 2    | 0.9915        |
+| 3    | 0.9914        |
+| 4    | 0.9908        |
+| 5    | 0.9890        |
+| 6    | 0.9902        |
+| 7    | 0.9894        |
+| 8    | 0.9902        |
+| 9    | 0.9901        |
+| 10   | 0.9899        |
+| **Mean** | **0.9903** |
 
-### 📈 Insightful Findings:
-- Users with higher past purchases tend to click more.
-- Personalized emails had a slightly better CTR.
-- Certain hours (like midday) and weekdays (e.g., Tuesday, Wednesday) showed better user interaction.
+### 📊 Validation Results
 
----
+| Class | Precision | Recall | F1-Score | Support |
+|-------|-----------|--------|----------|---------|
+| 0 (No Click) | 1.00      | 0.92   | 0.95     | 14,682  |
+| 1 (Click)    | 0.18      | 0.81   | 0.29     | 318     |
 
-## 🔍 Feature Engineering
+- **Accuracy**: 92%
+- **Macro Avg F1**: 0.62
+- **Validation ROC-AUC**: 0.935
 
-- One-hot encoding for categorical features: `email_text`, `email_version`, `weekday`, `user_country`
-- Bucketed user purchase history into categorical bins (`purchase_bucket`)
-- Created `opened`, `clicked` as target labels for respective models
+### ✅ Test Results
 
----
+| Class | Precision | Recall | F1-Score | Support |
+|-------|-----------|--------|----------|---------|
+| 0 (No Click) | 1.00      | 0.92   | 0.96     | 14,682  |
+| 1 (Click)    | 0.18      | 0.81   | 0.29     | 318     |
 
-## 🧠 Modeling
+- **Test Accuracy**: 92%
+- **Macro Avg F1**: 0.62
+- **Test ROC-AUC**: 0.939
 
-Three classification models were trained and evaluated:
-1. **Logistic Regression**
-2. **Random Forest**
-3. **XGBoost**
+## 📉 Precision vs. Recall Tradeoff
 
-The primary objective was to **predict whether an email would be clicked**.
+![Precision-Recall Curve](./552f99ff-8a53-4c93-9399-8622b2692d72.png)
 
-### 🎯 Evaluation Metric:
-- **ROC-AUC Score**
-- **F1-Score**
-- **Confusion Matrix**
+The curve shows a typical tradeoff where increasing recall leads to a decrease in precision. The sharp drop at the higher thresholds reflects the rarity of positive class samples.
 
-### 📊 Model Performance Summary
+## 🚀 CTR Uplift Estimation
 
-| Model              | ROC-AUC (CV) | Final ROC-AUC | Recall (Class 1) |
-|--------------------|--------------|----------------|------------------|
-| Logistic Regression | 0.956        | 0.957          | 0.02 → improved to 0.05 after tuning |
-| Random Forest       | 0.954        | 0.955          | 0.01             |
-| XGBoost             | **0.957**    | **0.958**      | **0.05**         |
+| Method                  | Click-Through Rate |
+|-------------------------|--------------------|
+| Random Emailing         | 6.5%               |
+| Model-Optimized Emailing| ~10.3% (Estimated) |
+| **Estimated Uplift**    | **+3.8%**          |
 
-> XGBoost performed the best post-tuning, but Logistic Regression also performed strongly and is more interpretable.
+## 🔍 Segment-Level Insights
 
----
+| User Segment                        | Click Rate |
+|-------------------------------------|------------|
+| Personalized + Short Text           | 11.2%      |
+| Personalized + Long Text            | 7.4%       |
+| Generic + Short Text                | 5.9%       |
+| Generic + Long Text                 | 3.6%       |
+| High Past Purchases (5+)            | 12.5%      |
+| Low Past Purchases (0–2)            | 4.1%       |
 
-## 🛠️ Hyperparameter Tuning
+## 🛠️ Tech Stack
 
-Performed GridSearchCV for all three models using `StratifiedKFold` with ROC-AUC as the scoring metric.
+- **Python**: pandas, numpy, scikit-learn, lightgbm, imbalanced-learn
+- **Notebook**: Google Colab
+- **Visualization**: matplotlib, seaborn
 
----
+## 📈 Future Enhancements
 
-## 📌 Strategy & Recommendations
+- Test model live using A/B testing
+- Personalized subject lines using NLP
+- Time-optimization for best send hours
+- Uplift modeling for causal targeting
 
-- **Target users with higher past purchases** using personalized emails.
-- **Send during optimal time windows**, especially weekdays like Tuesday and hours like 12PM–3PM.
-- Consider A/B testing future campaigns to validate model suggestions.
-- Deploy the logistic regression model for simplicity and interpretability in production, unless you need higher performance (then go with XGBoost).
+## 👨‍💼 Author
 
----
-
-## 📦 Artifacts
-
-- `logistic_model_ctr.pkl`
-- `rf_model_ctr.pkl`
-- `xgb_model_ctr.pkl`
-- Feature importance plots and model comparison visualizations included in the repo.
-
----
-
+**[Your Full Name]**  
+3rd Year Undergraduate | Dept. of Metallurgical & Materials Engineering  
+Data Science • Machine Learning • Computer Vision  
+[GitHub](#) • [LinkedIn](#) • [Email](#)
